@@ -11,7 +11,7 @@ h2. Installation
 # Copy the @wpsc@ and @wpsc.conf.yml@ files to a directory in your PATH (eg. @/usr/local/bin@)
 # Give the script executable priviledges - @chmod +x wpsc@
 # Add the settings for each of your sites running the "WP Status Dashboard":http://wordpress.org/extend/plugins/wp-status-dashboard/ plugin into @wpsc.conf.yml@
-# Run with @wpsc@s
+# Run with @wpsc@
 
 h2. Configuration
 
