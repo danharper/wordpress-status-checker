@@ -1,0 +1,26 @@
+h3. WordPress Status Checker
+
+Works in conjunction with the "WP Status Dashboard":http://wordpress.org/extend/plugins/wp-status-dashboard/ WordPress plugin to check the status of:
+
+* WordPress version
+* WordPress plugin updates
+* Site indexable?
+
+h4. Installation
+
+# Copy the @wpsc@ and @wpsc.conf.yml@ files to a directory in your PATH (eg. @/usr/local/bin@)
+# Give the script executable priviledges - @chmod +x wpsc@
+# Add the settings for each of your sites running the "WP Status Dashboard":http://wordpress.org/extend/plugins/wp-status-dashboard/ plugin into @wpsc.conf.yml@
+# Run with @wpsc@s
+
+h4. Configuration
+
+Inside the @wpsc.conf.yml@ file, enter the settings for each of your sites running the "WP Status Dashboard":http://wordpress.org/extend/plugins/wp-status-dashboard/ plugin in the following YAML format:
+
+    - name: Example Site 1
+		  uri: http://example.com/
+		  key: securitykeyhere 
+
+		- name: Another Example
+		  uri: http://example.com/site2/
+		  key: thesecuritykeyforthissitehere

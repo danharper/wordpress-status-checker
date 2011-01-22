@@ -1,0 +1,7 @@
+- name: Example Site 1
+  uri: http://example.com/
+  key: securitykeyhere 
+
+- name: Another Example
+  uri: http://example.com/site2/
+  key: thesecuritykeyforthissitehere

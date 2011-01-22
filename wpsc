@@ -1,0 +1,109 @@
+#!/usr/bin/env ruby
+
+# Check the status of your WordPress-powered sites
+#  * WordPress version
+#  * WordPress plugin updates
+#  * Site indexable?
+# 
+# Works in conjunction with the "WP Status Dashboard" plugin:
+#  http://wordpress.org/extend/plugins/wp-status-dashboard/
+# 
+# Check the project repo at GitHub for instructions:
+#  https://github.com/danharper/wordpress-status-checker/
+# 
+# Author: Dan Harper <http://danharper.me>
+
+require 'rubygems'
+require 'net/http'
+require 'uri'
+require 'yaml'
+
+# Load configuration file
+if File.file?("wpsc.conf.yml")
+	sites = YAML.load_file File.dirname(__FILE__) + "/wpsc.conf.yml"
+else
+	puts "Config file not found. Create 'wpsc.conf.yml' and see project page on GitHub."
+	exit 1
+end
+
+# Get latest WordPress version
+print "Getting latest WordPress version... "
+v = Net::HTTP.get URI.parse("http://wordpress.org/download/")
+v = v.split("latest stable release of WordPress (Version ")
+v = v[1].split(")")[0]
+if v.to_i < 3
+	puts "\033[31m" + "Error" + "\033[0m"
+else
+	puts "\033[37m\033[40m\033[1m " + v + " \033[0m"
+end
+puts
+
+# WPSD plugin paths
+wpsd_path = "wp-content/plugins/wp-status-dashboard/wp_status_dashboard.php?"
+check_security_key = "data=security&security_key="
+check_indexable = "data=status&security_key="
+check_version = "data=version&security_key="
+check_plugins = "data=updates&security_key="
+
+# Errors etc.
+errors = 0
+vital = 0
+warning = 0
+total_vital = 0
+total_warning = 0
+
+# Check sites
+for site in sites
+	puts "\033[1m" + site["name"] + "\033[0m"
+	
+	uri = site["uri"] + wpsd_path
+	print "Checking security key... "
+	valid_key = Net::HTTP.get URI.parse(uri + check_security_key + site["key"])
+	if valid_key == "1"
+		print "\033[32m" + "OK" + "\033[0m"
+		puts
+		print "Indexable... "
+		indexable = Net::HTTP.get URI.parse(uri + check_indexable + site["key"])
+		if indexable == "true"
+			print "\033[32m" + "OK" + "\033[0m"
+		else
+			print "\033[33m" + "No" + "\033[0m"
+			warning += 1
+		end
+		puts
+		
+		print "WordPress version... "
+		version = Net::HTTP.get URI.parse(uri + check_version + site["key"])
+		if version == v
+			puts "\033[32m" + "OK" + "\033[0m"
+		else
+			puts "\033[31m" + version + "\033[0m"
+			vital += 1
+		end
+		
+		print "Plugin updates... "
+		plugins = Net::HTTP.get URI.parse(uri + check_plugins + site["key"])
+		if plugins == "0"
+			puts "\033[32m" + "OK" + "\033[0m"
+		else
+			puts "\033[31m" + plugins + "\033[0m"
+			vital += 1
+		end
+	else
+		puts "\033[31m" + "Error" + "\033[0m"
+		errors += 1
+	end
+	
+	puts "\033[33m" + warning.to_s + " warnings" + "\033[0m" if warning > 0
+	puts "\033[31m" + vital.to_s + " vitals" + "\033[0m" if vital > 0
+	puts
+	total_warning += warning
+	total_vital += vital
+	warning = 0
+	vital = 0
+end
+
+puts "\033[33m" + total_warning.to_s + " total warnings" + "\033[0m" if total_warning > 0
+puts "\033[31m" + total_vital.to_s + " total vitals" + "\033[0m" if total_vital > 0
+puts "\033[31m" + errors.to_s + " failed connections" + "\033[0m" if errors > 0
+puts "\033[32m" + "All good!" + "\033[0m" if total_warning == 0 && total_vital == 0 && errors == 0
