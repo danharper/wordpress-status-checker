@@ -18,9 +18,9 @@ h2. Configuration
 Inside the @wpsc.conf.yml@ file, enter the settings for each of your sites running the "WP Status Dashboard":http://wordpress.org/extend/plugins/wp-status-dashboard/ plugin in the following YAML format:
 
     - name: Example Site 1
-		  uri: http://example.com/
-		  key: securitykeyhere 
-
-		- name: Another Example
-		  uri: http://example.com/site2/
-		  key: thesecuritykeyforthissitehere
+      uri: http://example.com/
+      key: securitykeyhere 
+    
+    - name: Another Example
+      uri: http://example.com/site2/
+      key: thesecuritykeyforthissitehere
